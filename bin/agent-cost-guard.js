@@ -9,7 +9,7 @@
  *   export OPENAI_BASE_URL=http://127.0.0.1:8791/v1
  *   export OPENAI_DEFAULT_HEADERS='{"x-session-id":"my-session"}'
  */
-import { Budget, priceOf } from "../src/index.js"
+import { Budget, priceOf, LIMITS } from "../src/index.js"
 
 // --- CLI shell: --help / --version -------------------------------------------
 const HELP = "agent-cost-guard — A budget in front of any OpenAI-compatible endpoint.\n\nUSAGE\n  agent-cost-guard --upstream https://api.example.com/v1 --port 8791\n  # then point the agent at http://127.0.0.1:8791/v1\n\nCOMMANDS / OPTIONS\n  --upstream <url>   the OpenAI-compatible endpoint to protect (required)\n  --port <n>         port to listen on (default 8791)\n  --max-tokens <n>   token budget per session (default 200000)\n  --max-spend <usd>  spend budget per session (default 5)\n  --max-rounds <n>   round-trip cap per session (default 60)\n\nEndpoints:\n  GET /health              status and per-session stats\n  GET /report?id=<session>  the spend report of one session\n\nGive the agent a session id: header  x-session-id: <id>\n\nMIT · https://github.com/rustemmustafingovua-byte"
@@ -36,11 +36,10 @@ if (!upstream) {
 }
 const port = Number(arg("--port", 8791))
 const budget = new Budget({
-  maxTokens: Number(arg("--max-tokens", LIMITS_default.maxTokens)),
-  maxSpendUsd: Number(arg("--max-spend", 5)),
-  maxRounds: Number(arg("--max-rounds", 60)),
+  maxTokens: Number(arg("--max-tokens", LIMITS.maxTokens)),
+  maxSpendUsd: Number(arg("--max-spend", LIMITS.maxSpendUsd)),
+  maxRounds: Number(arg("--max-rounds", LIMITS.maxRounds)),
 })
-const LIMITS_default = { maxTokens: 200000 }
 
 const key = process.env.UPSTREAM_API_KEY || ""
 const http = await import("node:http")

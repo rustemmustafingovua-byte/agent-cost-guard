@@ -1,0 +1,54 @@
+import { test } from "node:test"
+import assert from "node:assert/strict"
+import { execFileSync, spawn } from "node:child_process"
+import { join } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const ROOT = join(fileURLToPath(new URL("..", import.meta.url)))
+const BIN = join(ROOT, "bin/agent-cost-guard.js")
+
+/**
+ * Регрессия: CLI падал с "Cannot access 'LIMITS_default' before initialization",
+ * то есть инструмент вообще не запускался. Проверяем, что он поднимается.
+ */
+test("CLI поднимает прокси и отвечает на /health", async () => {
+  const port = 8897
+  const proc = spawn("node", [BIN, "--upstream", "https://api.openai.com/v1", "--port", String(port)], {
+    stdio: "ignore",
+  })
+  try {
+    let ok = false
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 200))
+      try {
+        const res = await fetch(`http://127.0.0.1:${port}/health`)
+        if (res.ok) {
+          const body = await res.json()
+          assert.equal(body.ok, true)
+          ok = true
+          break
+        }
+      } catch {}
+    }
+    assert.ok(ok, "прокси должен подняться и ответить")
+  } finally {
+    proc.kill()
+  }
+})
+
+test("--help и --version работают", () => {
+  const help = execFileSync("node", [BIN, "--help"], { encoding: "utf8" })
+  assert.match(help, /agent-cost-guard/)
+  const ver = execFileSync("node", [BIN, "--version"], { encoding: "utf8" }).trim()
+  assert.match(ver, /^0\.\d+\.\d+$/)
+})
+
+test("без --upstream — понятная ошибка и код 2", () => {
+  let code = 0
+  try {
+    execFileSync("node", [BIN], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
+  } catch (e) {
+    code = e.status
+  }
+  assert.equal(code, 2)
+})
