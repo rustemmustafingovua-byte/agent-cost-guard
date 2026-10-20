@@ -26,6 +26,14 @@ An agent loop is unbounded by nature: it retries, it re-reads files, it calls to
 npm i -g agent-cost-guard
 ```
 
+<details>
+<summary>Без npm-логина — из tarball релиза</summary>
+
+```bash
+npm i -g https://github.com/rustemmustafingovua-byte/agent-cost-guard/releases/download/v0.1.0/agent-cost-guard-0.1.0.tgz
+```
+
+</details>
 ## What it does
 
 | | |
