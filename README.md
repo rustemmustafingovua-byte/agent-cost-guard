@@ -43,6 +43,31 @@ agent-cost-guard --upstream https://api.example.com/v1 --port 8791
 # then point the agent at http://127.0.0.1:8791/v1
 ```
 
+## CLI
+
+```
+agent-cost-guard — A budget in front of any OpenAI-compatible endpoint.
+
+USAGE
+  agent-cost-guard --upstream https://api.example.com/v1 --port 8791
+  # then point the agent at http://127.0.0.1:8791/v1
+
+COMMANDS / OPTIONS
+  --upstream <url>   the OpenAI-compatible endpoint to protect (required)
+  --port <n>         port to listen on (default 8791)
+  --max-tokens <n>   token budget per session (default 200000)
+  --max-spend <usd>  spend budget per session (default 5)
+  --max-rounds <n>   round-trip cap per session (default 60)
+
+Endpoints:
+  GET /health              status and per-session stats
+  GET /report?id=<session>  the spend report of one session
+
+Give the agent a session id: header  x-session-id: <id>
+
+MIT · https://github.com/rustemmustafingovua-byte
+```
+
 ## Part of a portfolio
 
 | Project | What it does |
