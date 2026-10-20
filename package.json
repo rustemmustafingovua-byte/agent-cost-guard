@@ -1,0 +1,43 @@
+{
+  "name": "agent-cost-guard",
+  "version": "0.1.0",
+  "description": "An agent loop is unbounded by nature: it retries, it re-reads files, it calls tools in circles. agent-cost-guard is a proxy that puts a wall around it — token budget, spend budget, round-trip cap, latency ceiling — in front of any OpenAI-compatible endpoint.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "agent-cost-guard": "bin/agent-cost-guard.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "cost-control",
+    "proxy",
+    "agents",
+    "budget",
+    "openai-compatible",
+    "llm",
+    "guardrails"
+  ],
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "lint": "node --check src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rustemmustafingovua-byte/agent-cost-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rustemmustafingovua-byte/agent-cost-guard/issues"
+  },
+  "homepage": "https://github.com/rustemmustafingovua-byte/agent-cost-guard"
+}
