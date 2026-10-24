@@ -52,3 +52,26 @@ test("без --upstream — понятная ошибка и код 2", () => {
   }
   assert.equal(code, 2)
 })
+
+test("GET /report.csv returns CSV with header model,tokens,cost,rounds", async () => {
+  const port = 8898
+  const proc = spawn("node", [BIN, "--upstream", "https://api.openai.com/v1", "--port", String(port)], {
+    stdio: "ignore",
+  })
+  try {
+    let csv = ""
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 200))
+      try {
+        const res = await fetch(`http://127.0.0.1:${port}/report.csv`)
+        if (res.ok) {
+          csv = await res.text()
+          break
+        }
+      } catch {}
+    }
+    assert.equal(csv.trim().split("\n")[0], "model,tokens,cost,rounds")
+  } finally {
+    proc.kill()
+  }
+})
