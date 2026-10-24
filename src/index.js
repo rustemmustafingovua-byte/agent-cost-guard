@@ -80,6 +80,17 @@ export class Budget {
   all() {
     return [...this.sessions.keys()].map((id) => this.report(id))
   }
+
+  /** Export a CSV spend report with one row per session (columns: model, tokens, cost, rounds). */
+  csv(id) {
+    const rows = id ? [this.report(id)].filter(Boolean) : this.all()
+    const lines = ["model,tokens,cost,rounds"]
+    for (const r of rows) {
+      const models = Object.keys(r.byModel || {}).join("+") || "unknown"
+      lines.push(`${models},${r.tokens},${r.spendUsd},${r.rounds}`)
+    }
+    return lines.join("\n") + "\n"
+  }
 }
 
 /** Price table per 1M tokens, in USD. */

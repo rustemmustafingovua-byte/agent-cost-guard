@@ -70,6 +70,7 @@ COMMANDS / OPTIONS
 Endpoints:
   GET /health              status and per-session stats
   GET /report?id=<session>  the spend report of one session
+  GET /report.csv           CSV spend report (one row per session)
 
 Give the agent a session id: header  x-session-id: <id>
 

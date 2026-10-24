@@ -12,7 +12,7 @@
 import { Budget, priceOf, LIMITS } from "../src/index.js"
 
 // --- CLI shell: --help / --version -------------------------------------------
-const HELP = "agent-cost-guard — A budget in front of any OpenAI-compatible endpoint.\n\nUSAGE\n  agent-cost-guard --upstream https://api.example.com/v1 --port 8791\n  # then point the agent at http://127.0.0.1:8791/v1\n\nCOMMANDS / OPTIONS\n  --upstream <url>   the OpenAI-compatible endpoint to protect (required)\n  --port <n>         port to listen on (default 8791)\n  --max-tokens <n>   token budget per session (default 200000)\n  --max-spend <usd>  spend budget per session (default 5)\n  --max-rounds <n>   round-trip cap per session (default 60)\n\nEndpoints:\n  GET /health              status and per-session stats\n  GET /report?id=<session>  the spend report of one session\n\nGive the agent a session id: header  x-session-id: <id>\n\nMIT · https://github.com/rustemmustafingovua-byte"
+const HELP = "agent-cost-guard — A budget in front of any OpenAI-compatible endpoint.\n\nUSAGE\n  agent-cost-guard --upstream https://api.example.com/v1 --port 8791\n  # then point the agent at http://127.0.0.1:8791/v1\n\nCOMMANDS / OPTIONS\n  --upstream <url>   the OpenAI-compatible endpoint to protect (required)\n  --port <n>         port to listen on (default 8791)\n  --max-tokens <n>   token budget per session (default 200000)\n  --max-spend <usd>  spend budget per session (default 5)\n  --max-rounds <n>   round-trip cap per session (default 60)\n\nEndpoints:\n  GET /health              status and per-session stats\n  GET /report?id=<session>  the spend report of one session\n  GET /report.csv           CSV spend report (one row per session)\n\nGive the agent a session id: header  x-session-id: <id>\n\nMIT · https://github.com/rustemmustafingovua-byte"
 const VERSION = "0.1.0"
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(HELP)
@@ -66,6 +66,11 @@ http
       res.writeHead(200, { "Content-Type": "application/json" })
       return res.end(JSON.stringify(rep, null, 2))
     }
+    if (url.pathname === "/report.csv") {
+      const id = url.searchParams.get("id")
+      res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8" })
+      return res.end(budget.csv(id))
+    }
 
     const verdict = budget.check(sessionId, { estimatedTokens: estimate(body) })
     if (!verdict.allowed) {
@@ -83,7 +88,7 @@ http
           ...(req.headers["x-session-id"] ? { "x-session-id": req.headers["x-session-id"] } : {}),
         },
         body: raw || undefined,
-        signal: AbortSignal.timeout(LIMITS_default.maxLatencyMs ?? 120000),
+        signal: AbortSignal.timeout(LIMITS.maxLatencyMs ?? 120000),
       })
       const text = await upstreamRes.text()
       let json = {}

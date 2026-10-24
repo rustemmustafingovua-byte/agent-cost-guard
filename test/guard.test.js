@@ -47,3 +47,14 @@ test("a storm is detected from the call log", () => {
   assert.equal(isStorm(calls), true)
   assert.equal(isStorm([{ at: new Date(Date.now() - 3600_000).toISOString() }]), false)
 })
+
+test("csv exports one row per session with header model,tokens,cost,rounds", () => {
+  const b = new Budget()
+  b.record("s1", { model: "gpt-4.1", promptTokens: 1000, completionTokens: 500, priceIn: 2, priceOut: 8 })
+  b.record("s2", { model: "claude-haiku-4-5", promptTokens: 500, completionTokens: 500, priceIn: 1, priceOut: 5 })
+  const lines = b.csv().trim().split("\n")
+  assert.equal(lines[0], "model,tokens,cost,rounds")
+  assert.equal(lines.length, 3)
+  assert.equal(lines[1], "gpt-4.1,1500,0.006,1")
+  assert.equal(lines[2], "claude-haiku-4-5,1000,0.003,1")
+})
