@@ -20,6 +20,14 @@
 
 An agent loop is unbounded by nature: it retries, it re-reads files, it calls tools in circles. agent-cost-guard is a proxy that puts a wall around it — token budget, spend budget, round-trip cap, latency ceiling — in front of any OpenAI-compatible endpoint.
 
+## Quick Start
+
+```bash
+git clone https://github.com/rustemmustafingovua-byte/agent-cost-guard.git
+cd agent-cost-guard && npm install
+npm test
+```
+
 ## Install
 
 ```bash
@@ -37,7 +45,10 @@ npm i -g https://github.com/rustemmustafingovua-byte/agent-cost-guard/releases/d
 ## What it does
 
 | | |
-|---|---|
+|
+
+⭐ **Star us on GitHub** — it helps others find the project.
+---|---|
 | **Token budget per session** | a long context cannot run away |
 | **Spend budget per session** | priced per model, in USD |
 | **Round-trip cap** | stops tool-call storms |
@@ -130,6 +141,12 @@ Every tool here is MIT and free. If it saved you time, you can support the work:
 - **GitHub Sponsors:** https://github.com/sponsors/rustemmustafingovua-byte
 
 Paid tiers of the hosted services are billed per call in USDC (x402) — no accounts, no keys.
+
+## Monetization
+
+This project earns through x402 micropayments, API key tiers, and hosted subscriptions. See package.json `funding` field and the live deployment for pay-per-call pricing.
+
+---
 
 ## License
 
