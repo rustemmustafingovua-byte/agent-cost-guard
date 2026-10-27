@@ -52,3 +52,30 @@ test("без --upstream — понятная ошибка и код 2", () => {
   }
   assert.equal(code, 2)
 })
+
+test("budget отклоняет запрос когда лимит исчерпан", async () => {
+  const port = 8898
+  const proc = spawn("node", [BIN, "--upstream", "https://httpbin.org/get", "--port", String(port), "--max-tokens", "10", "--max-rounds", "1"], {
+    stdio: "ignore",
+  })
+  try {
+    for (let i = 0; i < 40; i++) {
+      await new Promise((r) => setTimeout(r, 150))
+      try {
+        const res = await fetch(`http://127.0.0.1:${port}/v1/chat/completions`, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-session-id": "budget-test" },
+          body: JSON.stringify({ model: "gpt-4.1", messages: [{ role: "user", content: "hi" }] }),
+        })
+        if (res.status === 402 || res.status === 429) {
+          const body = await res.json()
+          assert.ok(body.error?.type === "budget_exceeded")
+          return
+        }
+      } catch {}
+    }
+    assert.fail("ожидали 402/429 из-за исчерпания бюджета")
+  } finally {
+    proc.kill()
+  }
+})
