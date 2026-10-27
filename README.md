@@ -51,6 +51,36 @@ agent-cost-guard --upstream https://api.example.com/v1 --port 8791
 # then point the agent at http://127.0.0.1:8791/v1
 ```
 
+### Usage examples
+
+Track a session with a header:
+
+```bash
+curl -X POST http://127.0.0.1:8791/v1/chat/completions \
+  -H "content-type: application/json" \
+  -H "x-session-id: my-project" \
+  -d '{"model":"gpt-4.1","messages":[{"role":"user","content":"hi"}]}'
+```
+
+Check the health and active sessions:
+
+```bash
+curl http://127.0.0.1:8791/health
+```
+
+Get a spend report for one session:
+
+```bash
+curl "http://127.0.0.1:8791/report?id=my-project"
+```
+
+Pass the upstream API key through the environment instead of the CLI:
+
+```bash
+export UPSTREAM_API_KEY=sk-...
+agent-cost-guard --upstream https://api.openai.com/v1 --port 8791
+```
+
 ## CLI
 
 ```

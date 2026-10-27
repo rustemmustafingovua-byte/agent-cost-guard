@@ -79,3 +79,26 @@ test("budget отклоняет запрос когда лимит исчерп�
     proc.kill()
   }
 })
+
+test("без UPSTREAM_API_KEY — прокси запускается с открытым ключом", async () => {
+  const port = 8899
+  const env = { ...process.env }
+  delete env.UPSTREAM_API_KEY
+  const proc = spawn("node", [BIN, "--upstream", "https://httpbin.org/get", "--port", String(port)], {
+    stdio: "ignore",
+    env,
+  })
+  try {
+    let ok = false
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 200))
+      try {
+        const res = await fetch(`http://127.0.0.1:${port}/health`)
+        if (res.ok) { ok = true; break }
+      } catch {}
+    }
+    assert.ok(ok, "прокси должен подняться без UPSTREAM_API_KEY")
+  } finally {
+    proc.kill()
+  }
+})
