@@ -83,7 +83,7 @@ http
           ...(req.headers["x-session-id"] ? { "x-session-id": req.headers["x-session-id"] } : {}),
         },
         body: raw || undefined,
-        signal: AbortSignal.timeout(LIMITS_default.maxLatencyMs ?? 120000),
+        signal: AbortSignal.timeout(LIMITS.maxLatencyMs ?? 120000),
       })
       const text = await upstreamRes.text()
       let json = {}
