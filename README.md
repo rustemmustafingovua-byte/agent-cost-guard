@@ -1,153 +1,61 @@
 <div align="center">
 
-<img src="docs/social-preview.png" alt="agent-cost-guard" width="100%">
+# Agent Cost Guard
 
-# agent-cost-guard
-
-**A budget in front of any OpenAI-compatible endpoint.**
-
-[![CI](https://github.com/rustemmustafingovua-byte/agent-cost-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/rustemmustafingovua-byte/agent-cost-guard/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/agent-cost-guard?color=cb3837&logo=npm)](https://www.npmjs.com/package/agent-cost-guard)
-[![license](https://img.shields.io/badge/license-MIT-8b949e?logo=opensourceinitiative)](./LICENSE)
-[![node](https://img.shields.io/badge/node-%3E%3D20-3c873a?logo=node.js)](https://nodejs.org)
-[![paid](https://img.shields.io/badge/USDC-0x8aC6a229f254980CCd3Dd35CF5E1B7c08880B40E-2775ca?logo=ethereum)](https://base.org)
-
-[**Docs**](https://rustemmustafingovua-byte.github.io/agent-cost-guard/) · [Issues](https://github.com/rustemmustafingovua-byte/agent-cost-guard/issues) · [Discussions](https://github.com/rustemmustafingovua-byte/agent-cost-guard/discussions)
+[![CI](https://github.com/rustemmustafingovua-byte/agent-cost-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/rustemmustafingovua-byte/agent-cost-guard/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/agent-cost-guard?color=cb3837&logo=npm)](https://www.npmjs.com/package/agent-cost-guard) [![license](https://img.shields.io/badge/license-MIT-8b949e?logo=opensourceinitiative)](./LICENSE)
 
 </div>
 
 ---
 
-An agent loop is unbounded by nature: it retries, it re-reads files, it calls tools in circles. agent-cost-guard is a proxy that puts a wall around it — token budget, spend budget, round-trip cap, latency ceiling — in front of any OpenAI-compatible endpoint.
+**An agent loop is unbounded by nature: it retries, it re-reads files, it calls tools in circles. agent-cost-guard is a proxy that puts a wall around it — token budget, spend budget, round-trip cap, latency ceiling — in front of any OpenAI-compatible endpoint.**
 
-## Quick Start
+---
+
+⭐ **Star us on GitHub** if this project helps you build better agents!
+
+---
+
+## 🚀 Быстрый старт
 
 ```bash
-git clone https://github.com/rustemmustafingovua-byte/agent-cost-guard.git
+git clone https://github.com/rustemmustafingovua-byte/agent-cost-guard
 cd agent-cost-guard && npm install
-npm test
+agent-cost-guard --upstream https://api.openai.com/v1 --port 8791
 ```
 
-## Install
+---
+
+## 🎯 Демо
 
 ```bash
-npm i -g agent-cost-guard
-```
-
-<details>
-<summary>Без npm-логина — из tarball релиза</summary>
-
-```bash
-npm i -g https://github.com/rustemmustafingovua-byte/agent-cost-guard/releases/download/v0.1.0/agent-cost-guard-0.1.0.tgz
-```
-
-</details>
-## What it does
-
-| | |
-|
-
-⭐ **Star us on GitHub** — it helps others find the project.
----|---|
-| **Token budget per session** | a long context cannot run away |
-| **Spend budget per session** | priced per model, in USD |
-| **Round-trip cap** | stops tool-call storms |
-| **A report of where it went** | per model, per session, at /report |
-
-
-## Usage
-
-```bash
-agent-cost-guard --upstream https://api.example.com/v1 --port 8791
-# then point the agent at http://127.0.0.1:8791/v1
-```
-
-### Usage examples
-
-Track a session with a header:
-
-```bash
+agent-cost-guard --upstream https://api.openai.com/v1 --port 8791
 curl -X POST http://127.0.0.1:8791/v1/chat/completions \
   -H "content-type: application/json" \
   -H "x-session-id: my-project" \
   -d '{"model":"gpt-4.1","messages":[{"role":"user","content":"hi"}]}'
-```
-
-Check the health and active sessions:
-
-```bash
-curl http://127.0.0.1:8791/health
-```
-
-Get a spend report for one session:
-
-```bash
 curl "http://127.0.0.1:8791/report?id=my-project"
 ```
 
-Pass the upstream API key through the environment instead of the CLI:
+---
 
-```bash
-export UPSTREAM_API_KEY=sk-...
-agent-cost-guard --upstream https://api.openai.com/v1 --port 8791
-```
+## 💰 Монетизация
 
-## CLI
-
-```
-agent-cost-guard — A budget in front of any OpenAI-compatible endpoint.
-
-USAGE
-  agent-cost-guard --upstream https://api.example.com/v1 --port 8791
-  # then point the agent at http://127.0.0.1:8791/v1
-
-COMMANDS / OPTIONS
-  --upstream <url>   the OpenAI-compatible endpoint to protect (required)
-  --port <n>         port to listen on (default 8791)
-  --max-tokens <n>   token budget per session (default 200000)
-  --max-spend <usd>  spend budget per session (default 5)
-  --max-rounds <n>   round-trip cap per session (default 60)
-
-Endpoints:
-  GET /health              status and per-session stats
-  GET /report?id=<session>  the spend report of one session
-
-Give the agent a session id: header  x-session-id: <id>
-
-MIT · https://github.com/rustemmustafingovua-byte
-```
-
-## Part of a portfolio
-
-| Project | What it does |
-|---|---|
-| [`opencode-free-stack`](https://github.com/rustemmustafingovua-byte/opencode-free-stack) | route to free models, fall back automatically |
-| [`free-web-mcp`](https://github.com/rustemmustafingovua-byte/free-web-mcp) | web search for agents, zero credits |
-| [`agent-x402`](https://github.com/rustemmustafingovua-byte/agent-x402) | pay per API call in USDC with a spend policy |
-
-## Donate
-
-MIT, forever. USDC on Base:
-
-```
-0x8aC6a229f254980CCd3Dd35CF5E1B7c08880B40E
-```
-
-## Support
-
-Every tool here is MIT and free. If it saved you time, you can support the work:
-
-- **USDC (Base):** `0x8aC6a229f254980CCd3Dd35CF5E1B7c08880B40E`
-- **GitHub Sponsors:** https://github.com/sponsors/rustemmustafingovua-byte
-
-Paid tiers of the hosted services are billed per call in USDC (x402) — no accounts, no keys.
-
-## Monetization
-
-This project earns through x402 micropayments, API key tiers, and hosted subscriptions. See package.json `funding` field and the live deployment for pay-per-call pricing.
+- **Managed proxy**: hosted-версия прокси с SLA и приоритетной поддержкой
+- **Enterprise budgets**: кастомные политики бюджетов для крупных команд
+- **Observability plugins**: создание плагинов для отчётов и алертов
+- **Training**: корпоративное обучение по cost-aware agent design
 
 ---
 
-## License
+## Contributing
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feat/amazing-thing`)
+3. Commit your changes (`git commit -m 'feat: add amazing thing'`)
+4. Push to the branch (`git push origin feat/amazing-thing`)
+5. Open a Pull Request
+
+Bug reports and feature requests are welcome on the [Issues](https://github.com/rustemmustafingovua-byte/agent-cost-guard/issues) page.
 
 MIT © rustemmustafingovua-byte
